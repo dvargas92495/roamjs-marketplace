@@ -54,10 +54,6 @@ module "roamjs_lambda" {
       path = "marketplace", 
       method = "get"
     },
-    { 
-      path = "marketplace", 
-      method = "post"
-    },
   ]
   aws_access_token = var.aws_access_token
   aws_secret_token = var.aws_secret_token

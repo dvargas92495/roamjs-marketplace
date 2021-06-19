@@ -5,16 +5,28 @@ import {
   H4,
   H6,
   InputGroup,
+  Intent,
   Position,
   Spinner,
 } from "@blueprintjs/core";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { createOverlayRender } from "roamjs-components";
+import {
+  createBlock,
+  deleteBlock,
+  getShallowTreeByParentUid,
+  openBlockInSidebar,
+} from "roam-client";
 
 type Extension = {
   id: string;
   description: string;
+  src: string;
+};
+
+type Props = {
+  parentUid: string;
 };
 
 const idToName = (id: string) =>
@@ -71,7 +83,16 @@ const Thumbnail = ({ id }: { id: string }) => {
   );
 };
 
-const DrawerContent = () => {
+const DrawerContent = ({ parentUid }: Props) => {
+  const [installedExtensions, setInstalledExtensions] = useState(
+    Object.fromEntries(
+      getShallowTreeByParentUid(parentUid).map(({ text, uid }) => [text, uid])
+    )
+  );
+  const isInstalled = useMemo(
+    () => new Set(Object.keys(installedExtensions)),
+    [installedExtensions]
+  );
   const [extensions, setExtensions] = useState<Extension[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -99,6 +120,8 @@ const DrawerContent = () => {
       <div className={Classes.DRAWER_BODY} style={{ padding: 4 }}>
         {loading ? (
           <Spinner />
+        ) : !filteredExtensions.length ? (
+          <H6>No Extensions Found.</H6>
         ) : (
           filteredExtensions.map((e) => (
             <div key={e.id} style={{ display: "flex", width: "100%" }}>
@@ -117,7 +140,54 @@ const DrawerContent = () => {
                   justifyContent: "center",
                 }}
               >
-                <Button text={"install"} disabled />
+                {isInstalled.has(e.id) ? (
+                  <Button
+                    intent={Intent.DANGER}
+                    text={"Remove"}
+                    onClick={() => {
+                      const { [e.id]: uid, ...rest } = installedExtensions;
+                      deleteBlock(uid);
+                      setInstalledExtensions(rest);
+                    }}
+                  />
+                ) : (
+                  <Button
+                    text={"Install"}
+                    intent={Intent.PRIMARY}
+                    onClick={() => {
+                      const uid = createBlock({
+                        parentUid,
+                        node: {
+                          text: e.id,
+                          children: [
+                            {
+                              text: "{{[[roam/js]]}}",
+                              children: [
+                                {
+                                  text: `\`\`\`javascript
+var existing = document.getElementById("roamjs-${e.id}");
+if (!existing) {
+  var extension = document.createElement("script");
+  extension.src = "${e.src}";
+  extension.id = "roamjs-${e.id}";
+  extension.async = true;
+  extension.type = "text/javascript";
+  document.getElementsByTagName("head")[0].appendChild(extension);
+}\`\`\``,
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      });
+                      setInstalledExtensions({
+                        ...installedExtensions,
+                        [e.id]: uid,
+                      });
+                      setTimeout(() => openBlockInSidebar(uid), 1);
+                    }}
+                  />
+                )}
               </div>
               <hr />
             </div>
@@ -135,7 +205,10 @@ const DrawerContent = () => {
   );
 };
 
-const Marketplace = ({ onClose }: { onClose: () => void }) => {
+const Marketplace = ({
+  onClose,
+  parentUid,
+}: { onClose: () => void } & Props) => {
   return (
     <Drawer
       title={"RoamJS Marketplace"}
@@ -144,12 +217,12 @@ const Marketplace = ({ onClose }: { onClose: () => void }) => {
       isOpen={true}
       style={{ zIndex: 1000 }}
     >
-      <DrawerContent />
+      <DrawerContent parentUid={parentUid} />
     </Drawer>
   );
 };
 
-export const render = createOverlayRender<{}>(
+export const render = createOverlayRender<Props>(
   "marketplace-drawer",
   Marketplace
 );

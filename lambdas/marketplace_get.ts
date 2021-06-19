@@ -7,31 +7,50 @@ const dynamo = new AWS.DynamoDB({
 });
 const headers = {
   "Access-Control-Allow-Origin": "https://roamresearch.com",
-  "Access-Control-Allow-Methods": "POST",
+  "Access-Control-Allow-Methods": "GET",
 };
 
 export const handler: APIGatewayProxyHandler = async () =>
-  dynamo
-    .query({
-      TableName: "RoamJSExtensions",
-      KeyConditionExpression: "#s = :s",
-      IndexName: "state-index",
-      ExpressionAttributeNames: {
-        "#s": "state",
-      },
-      ExpressionAttributeValues: {
-        ":s": {
-          S: "LIVE",
+  Promise.all([
+    dynamo
+      .query({
+        TableName: "RoamJSExtensions",
+        KeyConditionExpression: "#s = :s",
+        IndexName: "state-index",
+        ExpressionAttributeNames: {
+          "#s": "state",
         },
-      },
-    })
-    .promise()
+        ExpressionAttributeValues: {
+          ":s": {
+            S: "LIVE",
+          },
+        },
+      })
+      .promise(),
+    dynamo
+      .query({
+        TableName: "RoamJSExtensions",
+        KeyConditionExpression: "#s = :s",
+        IndexName: "state-index",
+        ExpressionAttributeNames: {
+          "#s": "state",
+        },
+        ExpressionAttributeValues: {
+          ":s": {
+            S: "LEGACY",
+          },
+        },
+      })
+      .promise(),
+  ])
+    .then((r) => r.flatMap((i) => i.Items))
     .then((r) => ({
       statusCode: 200,
       body: JSON.stringify({
-        extensions: r.Items.map((i) => ({
+        extensions: r.map((i) => ({
           id: i.id.S,
           description: i.description.S,
+          src: i.src.S,
         })),
       }),
       headers,
