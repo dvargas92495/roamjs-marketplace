@@ -1,0 +1,29 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "description": "Browse and install extensions from the RoamJS marketplace directly from within Roam!",
+  "main": "./build/main.js",
+  "scripts": {
+    "build": "roamjs-scripts build",
+    "dev": "roamjs-scripts dev",
+    "lambdas": "roamjs-scripts lambdas",
+    "server": "localhost-lambdas"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.77",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
+    "localhost-lambdas": "^0.2.13",
+    "roamjs-scripts": "^0.9.3",
+    "typescript": "^4.3.4"
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^3.45.0",
+    "@blueprintjs/select": "^3.16.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "roam-client": "^1.77.0",
+    "roamjs-components": "^0.13.8"
+  }
+}
