@@ -52,6 +52,10 @@ module "roamjs_lambda" {
   lambdas = [
     { 
       path = "marketplace", 
+      method = "get"
+    },
+    { 
+      path = "marketplace", 
       method = "post"
     },
   ]
