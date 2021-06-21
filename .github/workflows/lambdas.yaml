@@ -7,6 +7,7 @@ on:
       - ".github/workflows/lambda.yaml"
 
 env:
+  API_URL: https://lambda.roamjs.com
   AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY_AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.DEPLOY_AWS_ACCESS_SECRET }}
 
