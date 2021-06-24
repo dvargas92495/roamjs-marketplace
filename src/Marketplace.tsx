@@ -11,7 +11,7 @@ import {
 } from "@blueprintjs/core";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { createOverlayRender } from "roamjs-components";
+import { createOverlayRender, toFlexRegex } from "roamjs-components";
 import {
   createBlock,
   deleteBlock,
@@ -27,6 +27,7 @@ type Extension = {
 
 type Props = {
   parentUid: string;
+  installUid?: string;
 };
 
 const idToName = (id: string) =>
@@ -83,11 +84,19 @@ const Thumbnail = ({ id }: { id: string }) => {
   );
 };
 
-const DrawerContent = ({ parentUid }: Props) => {
+const DrawerContent = ({ parentUid, installUid }: Props) => {
   const [installedExtensions, setInstalledExtensions] = useState(
     Object.fromEntries(
       getShallowTreeByParentUid(parentUid).map(({ text, uid }) => [text, uid])
     )
+  );
+  const autoEnable = useMemo(
+    () =>
+      !installUid ||
+      getShallowTreeByParentUid(installUid).some((t) =>
+        toFlexRegex("auto enable").test(t.text)
+      ),
+    [installUid]
   );
   const isInstalled = useMemo(
     () => new Set(Object.keys(installedExtensions)),
@@ -184,7 +193,30 @@ if (!existing) {
                         ...installedExtensions,
                         [e.id]: uid,
                       });
-                      setTimeout(() => openBlockInSidebar(uid), 1);
+                      setTimeout(() => {
+                        openBlockInSidebar(uid);
+                        if (autoEnable) {
+                          setTimeout(() => {
+                            const div = Array.from(
+                              document.querySelectorAll(
+                                ".rm-sidebar-outline .roam-block"
+                              )
+                            ).find((d) => d.id.endsWith(uid));
+                            if (div) {
+                              const blockContainer = div.closest(
+                                ".roam-block-container"
+                              );
+                              if (blockContainer) {
+                                const button =
+                                  blockContainer.querySelector<HTMLButtonElement>(
+                                    ".rm-roam-js--inactive .bp3-button"
+                                  );
+                                button?.click?.();
+                              }
+                            }
+                          }, 500);
+                        }
+                      }, 1);
                     }}
                   />
                 )}
