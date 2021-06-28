@@ -92,7 +92,7 @@ const DrawerContent = ({ parentUid, installUid }: Props) => {
   );
   const autoEnable = useMemo(
     () =>
-      !installUid ||
+      !!installUid &&
       getShallowTreeByParentUid(installUid).some((t) =>
         toFlexRegex("auto enable").test(t.text)
       ),
