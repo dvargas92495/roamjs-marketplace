@@ -137,7 +137,7 @@ const DrawerContent = ({ parentUid, installUid }: Props) => {
               <Thumbnail id={e.id} />
               <div style={{ flexGrow: 1, paddingLeft: 4 }}>
                 <H4>{idToName(e.id)}</H4>
-                <p>{e.description}</p>
+                <p style={{ color: "#182026" }}>{e.description}</p>
               </div>
               <div
                 style={{
@@ -231,6 +231,7 @@ if (!existing) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={"Search Extension..."}
+          style={{ background: "#FFF" }}
         />
       </div>
     </>
@@ -239,7 +240,7 @@ if (!existing) {
 
 const Marketplace = ({
   onClose,
-  parentUid,
+  ...props
 }: { onClose: () => void } & Props) => {
   return (
     <Drawer
@@ -249,7 +250,7 @@ const Marketplace = ({
       isOpen={true}
       style={{ zIndex: 1000 }}
     >
-      <DrawerContent parentUid={parentUid} />
+      <DrawerContent {...props} />
     </Drawer>
   );
 };
