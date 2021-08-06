@@ -231,7 +231,7 @@ if (!existing) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={"Search Extension..."}
-          style={{ background: "#FFF" }}
+          style={{ background: "#FFF !important" }}
         />
       </div>
     </>
