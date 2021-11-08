@@ -73,13 +73,19 @@ const Thumbnail = ({ id }: { id: string }) => {
       }}
       ref={containerRef}
     >
-      <img
-        style={{
-          borderRadius: 4,
-          height,
-        }}
-        src={src}
-      />
+      <a
+        href={`https://roamjs.com/extensions/${id}`}
+        target={"_blank"}
+        rel={"noopener"}
+      >
+        <img
+          style={{
+            borderRadius: 4,
+            height,
+          }}
+          src={src}
+        />
+      </a>
     </div>
   );
 };
@@ -136,7 +142,15 @@ const DrawerContent = ({ parentUid, installUid }: Props) => {
             <div key={e.id} style={{ display: "flex", width: "100%" }}>
               <Thumbnail id={e.id} />
               <div style={{ flexGrow: 1, paddingLeft: 4 }}>
-                <H4>{idToName(e.id)}</H4>
+                <H4>
+                  <a
+                    href={`https://roamjs.com/extensions/${e.id}`}
+                    target={"_blank"}
+                    rel={"noopener"}
+                  >
+                    {idToName(e.id)}
+                  </a>
+                </H4>
                 <p style={{ color: "#182026" }}>{e.description}</p>
               </div>
               <div
