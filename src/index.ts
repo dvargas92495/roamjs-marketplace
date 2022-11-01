@@ -19,6 +19,12 @@ const CONFIG = toConfig(ID);
 const ROAMJS_SRC_REGEX =
   /https:\/\/roamjs.com\/([\w\d-]*?)(?:\/\d\d\d\d-\d\d-\d\d-\d\d-\d\d)?(?:\/main)?\.js/;
 runExtension(ID, () => {
+  renderSimpleAlert({
+    content: `ATTENTION: This RoamJS extension (marketplace) is being removed in favor of Roam Depot! All RoamJS extensions are now either under review or have already been migrated to Roam Depot, removing the need for this extension.
+
+Please remove the \`{{[[roam/js]]}}\` code that installed this extension and refresh before installing from RoamDepot.`,
+    onConfirm: () => console.log("done"),
+  });
   createConfigObserver({
     title: CONFIG,
     config: {
