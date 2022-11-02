@@ -13,6 +13,7 @@ env:
   ROAMJS_EMAIL: support@roamjs.com
   ROAMJS_EXTENSION_ID: marketplace
   ROAMJS_RELEASE_TOKEN: ${{ secrets.ROAMJS_RELEASE_TOKEN }}
+  CUSTOM_ROAMJS_ORIGIN: https://roamjs.com
 
 jobs:
   deploy:
